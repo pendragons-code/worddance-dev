@@ -26,3 +26,6 @@ About 60%
 
 # things to note
 This project is completely in development, so please ignore this
+
+# gpt
+apparently gpt is not able to do many of the simple things i thought it should be able to. :*)
