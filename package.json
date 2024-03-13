@@ -1,0 +1,19 @@
+{
+  "name": "blacktea",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./loaders/server.js",
+  "scripts": {
+    "deploy": "export NODE_ENV=production node . --max-old-space-size=1024 >> log-file.txt 2>> err-file.txt & exit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "socket.io": "^4.7.4"
+  }
+}

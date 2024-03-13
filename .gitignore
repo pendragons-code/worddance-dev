@@ -1,0 +1,10 @@
+node_modules
+ecosystem.config.js
+.irrelevant
+.eslint.js
+Dockerfile
+package-lock.json
+.env
+.env.development
+.env.production
+todo
