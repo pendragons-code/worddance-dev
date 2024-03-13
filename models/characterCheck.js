@@ -4,4 +4,4 @@ function characterCheck(word) {
 	return pattern.test(str);
 }
 
-module.exports = { characterCheck }
+module.exports = { characterCheck };

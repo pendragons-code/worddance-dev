@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Landing Page</title>
+</head>
+
+<body>
+	<h1>Welcome to the Landing Page</h1>
+	<button id="createRoomBtn">Create Room</button>
+	<form id="joinRoomForm">
+		<label for="roomID">Enter Room ID:</label>
+		<input type="text" id="roomID" name="roomID">
+		<button type="submit">Join Room</button>
+	</form>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		const socket = io();
+
+		document.getElementById('createRoomBtn').addEventListener('click', () => {
+			socket.emit('createRoom', 'creatorID'); // Replace 'creatorID' with the actual creator ID
+		});
+
+		document.getElementById('joinRoomForm').addEventListener('submit', (event) => {
+			event.preventDefault();
+			const roomID = document.getElementById('roomID').value;
+			socket.emit('joinRoom', roomID);
+		});
+
+		socket.on('redirect', (roomID) => {
+			window.location.href = `/${roomID}`;
+		});
+
+		socket.on("alert", (message) => {
+			alert(message);
+		})
+
+		socket.on('RoomDoesNotExist', () => {
+			alert('Room does not exist');
+		});
+
+        // Handle other socket events as needed
+	</script>
+</body>
+
+</html>

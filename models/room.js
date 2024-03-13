@@ -1,11 +1,12 @@
-const rooms = require("../loaders/server.js")
-const config = require("../assets/config.json")
-const { characterCheck } = require("./characterCheck.js")
+const rooms = require("../loaders/server.js");
+const config = require("../assets/config.json");
+const { characterCheck } = require("./characterCheck.js");
+const { checkWord } = require("./wordValidator.js");
 
 class Room {
 	constructor(creatorID, roomID) {
 		let currentTime = new Date()
-		let endCreationTime = currentDate.setHours(currentDate.getHours() + 2)
+		let endCreationTime = currentTime.setHours(currentTime.getHours() + 2)
 		this.creatorID = creatorID,
 		this.roomID = roomID,
 		this.gameState = "waiting",
@@ -13,15 +14,14 @@ class Room {
 		this.playerNumber = [], // player 1 2 3, players added will not be removed even if the player leaves for consistency
 		this.wordsUsed = [],
 		this.playerPoints = {},
-		this.lastWord = "",
 		this.currentTurn = creatorID, // creator of the room has first turn
 		this.createdTime = currentTime,
 		this.expiryTime = endCreationTime,
-		this.startGameTime = ""
+		this.startGameTime = "";
 	}
 
 	broadcast(eventName, message) {
-		io.to(this.roomID).emit(eventName, message);
+		io.emit(this.roomID, { message })
 	}
 
 	sendToPlayer(playerID, event, message) {
@@ -75,39 +75,48 @@ class Room {
 	}
 
 	addPoints(playerID) {
-		let currentScore = this.playerPoints[`${playerID}`]
-		if(!currentScore) this.playerPoints[`${playerID}`] = 0
-		this.playerPoints[`${playerID}`] + 1
-		this.broadcast("addedPoint", {playerID: playerID})
+		let currentScore = this.playerPoints[`${playerID}`];
+		if(!currentScore) this.playerPoints[`${playerID}`] = 0;
+		this.playerPoints[`${playerID}`] + 1;
+		this.broadcast("addedPoint", {playerID: playerID});
 	}
 
 	playRound(word, playerID) {
 		// check if the word begins with the end of the last word
-		let wordArray = this.wordsUsed
-		let latestWord = wordArray[wordArray.length - 1]
-		if(latestWord.slice(-1) !== word.charAt(0)) return "wordDoesNotBeginWithLastLetter"
+		let wordArray = this.wordsUsed;
+		let latestWord = wordArray[wordArray.length - 1];
+		if(latestWord.slice(-1) !== word.charAt(0)) return "wordDoesNotBeginWithLastLetter";
 			//this.broadcast("wordDoesNotBeginWithLastLetter", { player: playerID })
 			//this.sendToPlayer(playerID, "wordDoesNotBeginWithLastLetter")
 			//return this.nextTurn(playerID)
 			//return "wordDoesNotBeginWithLastLetter"
 
 		// check if the word has already been used before
-		if(wordArray.includes(word)) return "thisWordWasUsedBefore"
+		if(wordArray.includes(word)) return "thisWordWasUsedBefore";
 
 		// check if the characters used are valid
-		if(!characterCheck(word)) return "invalidCharacters"
+		if(!characterCheck(word)) return "invalidCharacters";
 
 		if(!config.acceptedWords.includes(word)) {
+			checkWord(word, (err, found) => {
+				if(err) {
+					this.broadcast("error", err);
+					console.error(err);
+					return console.log(err);
+				}
+				if(!found) return "notInEnableDictionary";
+			});
 			// check if the word actually exists (against a dictionary) (enable)
 		}
 
 		//add points
-		this.addPoints(playerID)
+		this.addPoints(playerID);
 		// pushes word
-		this.usedWord(word)
-		this.broadcast("newWord", this.wordsUsed)
+		this.usedWord(word);
+		this.broadcast("newWord", { wordList: this.wordsUsed, lastWord: word });
 		// next turn
-		this.nextTurn(playerID)
+		this.nextTurn(playerID);
+		return true;
 	}
 
 }
