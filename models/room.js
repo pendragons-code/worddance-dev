@@ -20,8 +20,10 @@ class Room {
 		this.startGameTime = "";
 	}
 
-	broadcast(eventName, message) {
-		io.emit(this.roomID, { message })
+
+	broadcast(eventName, details) {
+		if(!details) return io.emit(this.roomID, { eventName: eventName });
+		return io.emit(this.roomID, { eventName: eventName, details: details });
 	}
 
 	sendToPlayer(playerID, event, message) {
@@ -32,12 +34,13 @@ class Room {
 	addPlayer(playerID) {
 		this.players.push(playerID);
 		this.playerNumber.push(playerID);
-		this.broadcast("newPlayerJoined", playerID);
+		this.broadcast("newPlayerJoined", { playerID: playerID });
 	}
 
 	removePlayer(playerID){
 		this.players = this.players.filter(player => player.id !== playerID);
-		if(this.players.length < 1) {
+		if(this.players.length < 2) {
+			this.broadcast("playerCountLow")
 			delete rooms[this.roomID];
 		}
 	}
@@ -59,17 +62,17 @@ class Room {
 		let newPlayer = playerArray[`${newPosition}`];
 		if(playerArray.length < newPosition) newPlayer = playerArray[0];
 		this.currentTurn = newPlayer;
-		this.broadcast("nextTurn", newPlayer);
+		this.broadcast("nextTurn", { newPlayer: newPlayer });
 	}
 
 	startGame() {
 		this.broadcast("gameStart", { playerNumber: this.playerNumber }); // at the start of the game the array to help determine the player number is sent, on the client side the player's name will be determined from the array with index of
 		this.gameState = "running";
-		this.broadcast("nextTurn", this.creatorID);
+		this.broadcast("nextTurn", { creatorID: this.creatorID });
 	}
 
 	endGame() {
-		this.broadcast("endGame", {});
+		this.broadcast("endGame");
 		this.gameState = "ended";
 		delete rooms[this.roomID];
 	}
@@ -78,7 +81,7 @@ class Room {
 		let currentScore = this.playerPoints[`${playerID}`];
 		if(!currentScore) this.playerPoints[`${playerID}`] = 0;
 		this.playerPoints[`${playerID}`] + 1;
-		this.broadcast("addedPoint", {playerID: playerID});
+		this.broadcast("addedPoint", { playerID: playerID });
 	}
 
 	playRound(word, playerID) {
@@ -100,7 +103,7 @@ class Room {
 		if(!config.acceptedWords.includes(word)) {
 			checkWord(word, (err, found) => {
 				if(err) {
-					this.broadcast("error", err);
+					this.broadcast("error", { err: err });
 					console.error(err);
 					return console.log(err);
 				}

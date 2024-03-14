@@ -20,7 +20,7 @@ module.exports.rooms = rooms;
 
 
 // while you can argue this is not really needed, you need to understand if someone has the ability to spoof requests the game would break
-const playersInRooms = []; // ensures that players cannot join 2 times
+const playersInRooms = {}; // ensures that players cannot join 2 times
 const creatorsOfRoom = []; // ensures that creators cannot create again
 
 
@@ -38,31 +38,31 @@ app.use(function(req, res) {
 
 io.on("connection", (socket) => {
 	let currentRoom;
+	console.log(socket); // just for logs
 
 	socket.on("joinRoom", (roomID) => {
 		let playerID = socket.id;
 		currentRoom = rooms[roomID];
-		// if(currentRoom.gameState !== "waiting") return socket.emit("cannotJoinRoom")
 		if(!currentRoom) return socket.emit("RoomDoesNotExist");
-		if(playersInRooms.includes(playerID)) return socket.emit("alert", "You are already in this room")
+		if(playersInRooms[`${playerID}`]) return socket.emit("alert", "You are already in this room"); // update
 		socket.join(roomID);
 		currentRoom.addPlayer(playerID);
-		console.log(rooms)
-		return playersInRooms.push(playerID);
+		console.log(rooms); // remove
+		return playersInRooms[`${playerID}`] = roomID;
 	});
 
 	this.lastWord = "",
 
 
 	socket.on("createRoom", () => {
-		let creatorID = socket.id
-		let genID = generateRoomID(creatorID.substring(0,5))
+		let creatorID = socket.id;
+		let genID = generateRoomID(creatorID.substring(0,5));
 		let newRoom = new Room(creatorID, genID);
 		rooms[newRoom.roomID] = newRoom;
 		creatorsOfRoom.push(creatorID);
-		rooms[newRoom.roomID].sendToPlayer(creatorID, "redirect", genID)
-		console.log(rooms)
-		return playersInRooms.push(creatorID);
+		rooms[newRoom.roomID].sendToPlayer(creatorID, "redirect", genID);
+		console.log(rooms); // remove
+		return playersInRooms[`${creatorID}`] = genID; // playerID: roomID
 	});
 
 
@@ -93,13 +93,28 @@ io.on("connection", (socket) => {
 	});
 
 
-// REDO THE DISCONNECT COMPONENT
-// the disconnect needs to check the socket id not the room id
-// using the socket id we can determine the room of origin, to do this we can search through all the rooms for this player
-// and remove him from the room array
-// also from the creator and in room array
-// followed by the usual checks of is creator and if there is only 1 person left
+	// REDO THE DISCONNECT COMPONENT
+	// the disconnect needs to check the socket id not the room id
+	// using the socket id we can determine the room of origin, to do this we can search through all the rooms for this player
+	// and remove him from the room array
+	// also from the creator and in room array
+	// followed by the usual checks of is creator and if there is only 1 person left
 
+	socket.on("disconnect", () => {
+		let playerID = socket.id;
+		if(playersInRooms[`${playerID}`]) {
+			let roomOfPlayerID = playersInRooms[`${playerID}`];
+			let roomOfPlayer = rooms[`${roomOfPlayerID}`];
+			roomOfPlayer.remove(playerID)
+			if(creatorsOfRoom.includes(playerID)) {
+				pullFromArray(creatorsOfRoom, playerID);
+				roomOfPlayer.broadcast("deletingRoom");
+				delete rooms[`${roomOfPlayer}`];
+			}
+			delete playersInRooms[`${playerID}`];
+		}
+		// check if user is in room
+	})
 
 
 });

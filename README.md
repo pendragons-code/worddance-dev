@@ -19,13 +19,15 @@ Not anything really crazy:
 [express](https://www.npmjs.com/package/express)			
 
 You might realized that there is no databased used here at all and that is because there is no real need to actually have a database
+
 # general docs
 The event table will be here soon
+
 # progress
 About 60%
 
 # things to note
 This project is completely in development, so please ignore this
 
-# gpt
-apparently gpt is not able to do many of the simple things i thought it should be able to. :*)
+# issues
+You might realize that the current version has a system where the creator has 
