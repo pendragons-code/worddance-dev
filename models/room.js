@@ -5,8 +5,8 @@ const { checkWord } = require("./wordValidator.js");
 
 class Room {
 	constructor(creatorID, roomID) {
-		let currentTime = new Date()
-		let endCreationTime = currentTime.setHours(currentTime.getHours() + 2)
+		let currentTime = new Date();
+		let endCreationTime = currentTime.setHours(currentTime.getHours() + 2);
 		this.creatorID = creatorID,
 		this.roomID = roomID,
 		this.gameState = "waiting",
@@ -40,7 +40,7 @@ class Room {
 	removePlayer(playerID){
 		this.players = this.players.filter(player => player.id !== playerID);
 		if(this.players.length < 2) {
-			this.broadcast("playerCountLow")
+			this.broadcast("playerCountLow");
 			delete rooms[this.roomID];
 		}
 	}

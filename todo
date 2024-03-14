@@ -1,0 +1,28 @@
+[-] gameloop
+[-] word validation
+
+[.] add error handling on backend
+[.] ensure all events are reported by sockets (room.js)
+[.] update event table
+
+[.] route handling on express
+	[-] redirect for landing page //https://stackoverflow.com/questions/68771638/whats-the-difference-between-res-redirect-and-res-sendfile/68771693
+	[-] sendfile for game page
+	[-] 404 page
+
+[.] frontEnd:
+	[.] html
+	[.] css
+	[.] js
+
+[.] full test
+[.] formatting
+
+
+
+
+// ignore
+[.] v2
+[.] 15 seconds time limit
+[.] instead of going by time, we can go first to 100 points
+[.] make changes so that creation of rooms uses an api instead (this would allow us to not have to deal with redirects although now we have to deal with other stuff)

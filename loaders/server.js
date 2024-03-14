@@ -60,7 +60,6 @@ io.on("connection", (socket) => {
 		let newRoom = new Room(creatorID, genID);
 		rooms[newRoom.roomID] = newRoom;
 		creatorsOfRoom.push(creatorID);
-		rooms[newRoom.roomID].sendToPlayer(creatorID, "redirect", genID);
 		console.log(rooms); // remove
 		return playersInRooms[`${creatorID}`] = genID; // playerID: roomID
 	});
