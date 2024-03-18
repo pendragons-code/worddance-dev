@@ -1,17 +1,15 @@
 const express = require("express");
 const rooms = require("./server.js");
 const router = express.Router();
+const { logError } = require("../models/errorManager.js");
 
-// root -> landing page, has a form to enter a roomID or create a room
-router.get("/", (req, res) => {
-	let roomID = req.query.roomID;
-	let validRooms = Object.keys(rooms);
-	if(!roomID) return res.render("landingPage.ejs");
-	// http://localhost:3000/?roomID=
-	if(!validRooms.includes(roomID)) return res.render("notFound.ejs");
-	return res.render("gamePage.ejs", { roomID });
-	// if not available the frontEnd js file would create a form and ask the user
-})
+try{
+	router.get("/", (req, res) => {
+		res.render("landingPage.ejs");
+	})
+} catch(e) {
+	logError(e);
+}
 
 // flow
 // user has a normal / request = landing page
@@ -23,4 +21,4 @@ router.get("/", (req, res) => {
 // user has a join request /?roomID=blahblah
 	// render the gamePage.ejs to help the user instead
 
-module.exports = router
+module.exports = router;

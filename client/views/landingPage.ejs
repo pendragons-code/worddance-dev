@@ -3,22 +3,48 @@
 
 <head>
 	<title>☕ Blacktea</title>
-	<script src="client.js"></script>
-	<script src="transform.js"></script>
+	<script src="/js/client.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Scoreboard</title>
+	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+	<script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
 
-	<h1>Join Room!</h1>
-	<form>
-		<label for="roomID"></label><br>
-		<input type="text" id="roomID" name="roomID"><br>
-		<br><input type="submit" value="Submit">
-	</form>
+	<input type="text" id="roomIDValue" placeholder="Join room!">
+	<button id="joinRoomBtn">Join!</button>
 
-	<br><h1>Create Room!</h1>
-	<button onclick="transform()">Create Room</button>
-
+	<br>
+	<button id="createRoomBtn">Create Room</button>
+	<div class="container">
+		<div id="roomID">
+		</div>
+		<div id="roomCreator">
+		</div>
+		<div id="roomExpiry">
+			<h2>room expiry:</h2>
+		</div>
+		<div id="scoreboard">
+			<h2>Scoreboard:</h2>
+		</div>
+		<div id="words-used">
+		</div>
+		<input type="text" id="word-input" placeholder="Enter a word">
+		<button id="submit-word-btn">Submit</button>
+		<br><br><button id="endGame">end game</button>
+		<br><br><button id="startGame">start game</button>
+		<br><br>
+		<div id="lastWord">
+		</div>
+		<br><br>
+		<div id="message">
+		</div>
+		<br><br>
+		<div id="turn">
+		</div>
+	</div>
 </body>
 
 </html>
